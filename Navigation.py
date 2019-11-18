@@ -9,7 +9,7 @@ class Navigation_simple:
     self.Engine = Engine
     self.credentials = service_account.Credentials.from_service_account_file('key.json')
     self.existing_credentials = pd.read_gbq("""SELECT USERNAME, PASSWORD FROM SAT_VOCAB_PROJECT.LOGIN_CREDENTIALS""", project_id="mysandbox-233913", credentials= self.credentials)
-    self.dict_creds = {row[1].USERNAME:row[1].PASSWORD for row in Program.existing_credentials.iterrows()}
+    self.dict_creds = {row[1].USERNAME:row[1].PASSWORD for row in self.existing_credentials.iterrows()}
     self.username = None
 
     self.flag_valid_login = False
@@ -85,7 +85,7 @@ REMINDER: YOU CAN TYPE DONE or QUIT to exit the program
           credential_log.to_gbq('SAT_VOCAB_PROJECT.LOGIN_CREDENTIALS', project_id="mysandbox-233913", credentials=self.credentials, if_exists = 'append')
           user_log.to_gbq('SAT_VOCAB_PROJECT.USER_LOG', project_id="mysandbox-233913", credentials=self.credentials, if_exists = 'append')
           self.existing_credentials = pd.read_gbq("""SELECT USERNAME, PASSWORD FROM SAT_VOCAB_PROJECT.LOGIN_CREDENTIALS""", project_id="mysandbox-233913", credentials= self.credentials)
-          self.dict_creds = {row[1].USERNAME:row[1].PASSWORD for row in Program.existing_credentials.iterrows()}
+          self.dict_creds = {row[1].USERNAME:row[1].PASSWORD for row in self.existing_credentials.iterrows()}
           self.success('Account successfully created!')
           print('''
 --------------------------------------------------------------------------------
