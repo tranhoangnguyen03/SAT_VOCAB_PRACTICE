@@ -103,9 +103,9 @@ REMINDER: YOU CAN TYPE DONE or QUIT to exit the program
         clear_output()
         print(self.reminder_message)
         if PracticeOrTest == 'Practice': 
-          words, sentence, points, flag_exit = Engine.Practice()
+          words, sentence, points, flag_exit = self.Engine.Practice()
         if PracticeOrTest == 'Test': 
-          words, sentence, points, flag_exit = Engine.Test()
+          words, sentence, points, flag_exit = self.Engine.Test()
         if flag_exit == True: break
         sentences[sentence] = (', '.join(words), points)
       print(f'''
