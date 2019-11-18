@@ -1,3 +1,9 @@
+import os, requests, re, time, datetime, pandas_gbq, getpass
+import numpy as np
+from google.oauth2 import service_account
+import pandas as pd
+from IPython.display import clear_output
+
 class MainEngine:
   def __init__(self, vocab_file):
     class _format_:
