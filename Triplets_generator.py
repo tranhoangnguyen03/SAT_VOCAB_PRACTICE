@@ -91,3 +91,11 @@ class MainEngine:
 
   def score(self, words, sentence):
     return np.sum([i[:i.find('-')].replace('TO ','').replace('to ','').strip(' ').upper() in sentence.upper() for i in words])
+
+class WordFam:
+  import json
+  def __init__(self,file):
+    with open(file,'r') as f:
+      self.wf = json.load(f)
+  def return_fam(self, word):
+    return 'something'
