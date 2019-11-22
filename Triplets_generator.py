@@ -1,4 +1,4 @@
-import os, requests, re, time, datetime, pandas_gbq, getpass, json, IPython, uuid
+import os, requests, re, time, datetime, pandas_gbq, getpass, json, IPython, uuid, google.cloud.storage
 import numpy as np
 import pandas as pd
 from google.oauth2 import service_account
@@ -120,15 +120,12 @@ class Vocab_select:
   def __init__(self):
     self.files_dict = {i[i.rfind('/')+1:]:i for i in os.popen('gsutil ls gs://sat_vocab_test/Vocab_txt/SAT-400').read().split('\n')[1:-1]}
     self.from_to = None
-  
+    self.GoogleBucket = google.cloud.storage.Client.from_service_account_json('key.json').get_bucket('sat_vocab_test')
   def GetFiles(self, a):
     output.clear()
-    self.choice = a
-    os.system(f'gsutil cp {file_dict[a]} .')
     #if not os.path.isfile(a): os.popen(f'gsutil cp {file_dict[a]} .')
     #assert os.path.isfile(a), 'Vocab file not found!'
-    with open(a,'r') as file:
-      self.string_ = file.read()
+    self.string_ = self.GoogleBucket.get_blob('Vocab_txt/SAT-400/{a}').download_as_string().decode('ASCII') 
     if a != '999_vocab_SAT_ALL.txt':
       print('''
 --------------------------------------------------------------------------------
