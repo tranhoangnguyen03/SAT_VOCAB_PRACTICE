@@ -1,4 +1,5 @@
 import os, requests, re, time, datetime, pandas_gbq, getpass, json
+from uuid import uuid4
 import numpy as np
 from google.oauth2 import service_account
 import pandas as pd
