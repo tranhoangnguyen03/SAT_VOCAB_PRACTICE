@@ -94,47 +94,61 @@ REMINDER: YOU CAN TYPE DONE or QUIT to exit the program
   def Run(self, PracticeOrTest):
     if self.username == None: print('Please Login!')
     else:
-      assert PracticeOrTest in ['Practice', 'Test'], f'Oi, {self.username}, me no understand your request'
-      if not self.flag_valid_login: self.username = 'AdminTest'
       start = time.time()
-      clear_output()
-      sentences = {}
-      while True:
+      if PracticeOrTest == 'Export':
         clear_output()
-        print(self.reminder_message)
-        if PracticeOrTest == 'Practice': 
-          words, sentence, points, flag_exit = self.Engine.Practice()
-        if PracticeOrTest == 'Test': 
-          words, sentence, points, flag_exit = self.Engine.Test()
-        if flag_exit == True: break
-        sentences[sentence] = (', '.join(words), points)
-      print(f'''
+        print('FULL WORD LIST BELOW:\n')
+        self.Engine.Export()
+        timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        user_log = pd.DataFrame({'USER' : [self.username],
+                                'ACTIVITY' : [PracticeOrTest.upper()],
+                                'TIMESTAMP' : [timestamp],
+                                'WORD' : [None],
+                                'SENTENCE' : [None],
+                                'SCORE' : [None],
+                                'VOCAB_FILE' : [self.Engine.vocab_file],
+                                'ACTIVITY_DURATION': [int(time.time()-start)]})
+      else:
+        assert PracticeOrTest in ['Practice', 'Test'], f'Oi, {self.username}, me no understand your request'
+        if not self.flag_valid_login: self.username = 'AdminTest'
+        clear_output()
+        sentences = {}
+        while True:
+          clear_output()
+          print(self.reminder_message)
+          if PracticeOrTest == 'Practice': 
+            words, sentence, points, flag_exit = self.Engine.Practice()
+          if PracticeOrTest == 'Test': 
+            words, sentence, points, flag_exit = self.Engine.Test()
+          if flag_exit == True: break
+          sentences[sentence] = (', '.join(words), points)
+        print(f'''
       ****************************************************************************
       Your total results:''')
-      for i,v in sentences.items(): print(v, i)
-      ##### Logging acitivities
+        for i,v in sentences.items(): print(v, i)
+        ##### Logging acitivities
 
-      timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-      num_rows = len(sentences)
-      user_log = pd.DataFrame({'USER' : [self.username]*num_rows,
-                               'ACTIVITY' : [PracticeOrTest.upper()]*num_rows,
-                               'TIMESTAMP' : [timestamp]*num_rows,
-                               'WORD' : [i[0] for i in sentences.values()],
-                               'SENTENCE' : list(sentences.keys()),
-                               'SCORE' : [i[1] for i in sentences.values()],
-                               'VOCAB_FILE' : [self.Engine.vocab_file]*num_rows,
-                               'ACTIVITY_DURATION': [int(time.time()-start)]*num_rows })
-      user_log = user_log.astype({'USER': str,
-                                  'ACTIVITY': str,
-                                  'TIMESTAMP': 'datetime64[ns]',
-                                  'WORD': str,
-                                  'SENTENCE': str,
-                                  'SCORE': int,
-                                  'VOCAB_FILE': str,
-                                  'ACTIVITY_DURATION': int})
-      user_log.to_gbq('SAT_VOCAB_PROJECT.USER_LOG', project_id="mysandbox-233913", credentials=self.credentials, if_exists = 'append')
-      self.success('Your Practice Results Have Been Uploaded!')
-      print(f'\nThanks for playing {self.username}')
+        timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        num_rows = len(sentences)
+        user_log = pd.DataFrame({'USER' : [self.username]*num_rows,
+                                'ACTIVITY' : [PracticeOrTest.upper()]*num_rows,
+                                'TIMESTAMP' : [timestamp]*num_rows,
+                                'WORD' : [i[0] for i in sentences.values()],
+                                'SENTENCE' : list(sentences.keys()),
+                                'SCORE' : [i[1] for i in sentences.values()],
+                                'VOCAB_FILE' : [self.Engine.vocab_file]*num_rows,
+                                'ACTIVITY_DURATION': [int(time.time()-start)]*num_rows })
+        user_log = user_log.astype({'USER': str,
+                                    'ACTIVITY': str,
+                                    'TIMESTAMP': 'datetime64[ns]',
+                                    'WORD': str,
+                                    'SENTENCE': str,
+                                    'SCORE': int,
+                                    'VOCAB_FILE': str,
+                                    'ACTIVITY_DURATION': int})
+        user_log.to_gbq('SAT_VOCAB_PROJECT.USER_LOG', project_id="mysandbox-233913", credentials=self.credentials, if_exists = 'append')
+        self.success('Your Practice Results Have Been Uploaded!')
+        print(f'\nThanks for playing {self.username}')
 
   def success(self, message):
     for i in range(3):
@@ -143,3 +157,47 @@ REMINDER: YOU CAN TYPE DONE or QUIT to exit the program
       print(f'\r/0\/0\/0\-{message}-/0\/0\/0\\',end='')
       time.sleep(0.5)
       print(f'\r\\0/\\0/\\0/-{message}-\\0/\\0/\\0/',end='')
+
+class ReceiveInput(object):
+  def __init__(self, title, callback):
+    self._title = title
+    self._callback = callback
+
+  def _repr_html_(self):
+    callback_id = 'button-' + str(uuid.uuid4())
+    output.register_callback(callback_id, self._callback)
+
+    template = """{title}
+      <input type="text" id={callback_id} value="ex: 1-405" name={title}></input>
+        <script>
+          document.querySelector("#{callback_id}").onchange = (e) => {{
+            google.colab.kernel.invokeFunction('{callback_id}', [e.target.value], {{}})
+            e.preventDefault();
+          }};
+        </script>"""
+    html = template.format(title=self._title, callback_id=callback_id)
+    return html 
+
+class SelectOption(object):
+  def __init__(self, title, callback, options):
+    self._title = title
+    self._callback = callback
+    self.options = ''' 
+'''.join([f'<option value= "{i}"> {i}'for i in options])
+
+  def _repr_html_(self):
+    callback_id = 'button-' + str(uuid.uuid4())
+    output.register_callback(callback_id, self._callback)
+
+    template = """{title}
+    <select id={callback_id}>
+"""+self.options+"""
+    </select>
+        <script>
+          document.querySelector("#{callback_id}").onchange = (e) => {{
+            google.colab.kernel.invokeFunction('{callback_id}', [e.target.value], {{}})
+            e.preventDefault();
+          }};
+        </script>"""
+    html = template.format(title=self._title, callback_id=callback_id)
+    return html
