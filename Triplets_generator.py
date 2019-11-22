@@ -123,6 +123,7 @@ class Vocab_select:
     self.GoogleBucket = google.cloud.storage.Client.from_service_account_json('key.json').get_bucket('sat_vocab_test')
   def GetFiles(self, a):
     output.clear()
+    self.choice = a
     #if not os.path.isfile(a): os.popen(f'gsutil cp {file_dict[a]} .')
     #assert os.path.isfile(a), 'Vocab file not found!'
     self.string_ = self.GoogleBucket.get_blob(f'Vocab_txt/SAT-400/{a}').download_as_string().decode('ASCII') 
