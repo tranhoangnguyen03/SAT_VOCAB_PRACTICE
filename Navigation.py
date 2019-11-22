@@ -1,4 +1,4 @@
-import os, requests, re, time, datetime, pandas_gbq, getpass
+import os, requests, re, time, datetime, pandas_gbq, getpass, uuid 
 import numpy as np
 from uuid import uuid4
 from google.oauth2 import service_account
