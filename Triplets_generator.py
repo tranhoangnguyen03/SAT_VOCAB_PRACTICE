@@ -125,7 +125,7 @@ class Vocab_select:
     output.clear()
     #if not os.path.isfile(a): os.popen(f'gsutil cp {file_dict[a]} .')
     #assert os.path.isfile(a), 'Vocab file not found!'
-    self.string_ = self.GoogleBucket.get_blob('Vocab_txt/SAT-400/{a}').download_as_string().decode('ASCII') 
+    self.string_ = self.GoogleBucket.get_blob(f'Vocab_txt/SAT-400/{a}').download_as_string().decode('ASCII') 
     if a != '999_vocab_SAT_ALL.txt':
       print('''
 --------------------------------------------------------------------------------
