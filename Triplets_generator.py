@@ -124,7 +124,7 @@ class Vocab_select:
   def GetFiles(self, a):
     output.clear()
     self.choice = a
-    if not os.path.isfile(a): os.system(f'gsutil cp {file_dict[a]} .')
+    if not os.path.isfile(a): os.popen(f'gsutil cp {file_dict[a]} .')
     assert os.path.isfile(a), 'Vocab file not found!'
     with open(a,'r') as file:
       self.string_ = file.read()
