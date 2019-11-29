@@ -47,7 +47,7 @@ class MainEngine:
     # """
     print(f"""Your word triplet is {triplet}
   Make your sentence:\n""")
-    sentence = input()
+    sentence = input('''Type here --> ''')
     # """
     if sentence.strip('').upper() in ['DONE','QUIT','EXIT']: flag_exit = True
     points = self.score(triplet, sentence)
@@ -74,7 +74,7 @@ class MainEngine:
 
   def get_definition(self, word):
     url = f'https://googledictionaryapi.eu-gb.mybluemix.net/?define={word}'
-    html = requests.get(url)
+    html = requests.get(url, timeout=5)
     json_ = html.json()
     for i,v in json_[0]['meaning'].items():
       example = None
