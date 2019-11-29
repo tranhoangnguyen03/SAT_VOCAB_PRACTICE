@@ -9,7 +9,7 @@ class Navigation_simple:
   def __init__(self, Engine):
     self.Engine = Engine
     self.credentials = service_account.Credentials.from_service_account_file('key.json')
-    self.existing_credentials = pd.read_gbq("""SELECT USERNAME, PASSWORD FROM SAT_VOCAB_PROJECT.LOGIN_CREDENTIALS""", project_id="mysandbox-233913", credentials= self.credentials)
+    self.existing_credentials = pd.read_gbq("""SELECT ID, USERNAME, PASSWORD FROM SAT_VOCAB_PROJECT.LOGIN_CREDENTIALS""", project_id="mysandbox-233913", credentials= self.credentials)
     self.dict_creds = {row[1].USERNAME:row[1].PASSWORD for row in self.existing_credentials.iterrows()}
     self.username = None
 
