@@ -96,7 +96,7 @@ class MainEngine:
     else:
       form = soup.find(class_='vpx4Fd').find(class_='pgRvse vdBwhd').getText()
       span = [i.getText() for i in soup.find(class_='thODed Uekwlc XpoqFe').find_all('span') if len(i.getText())>1]
-      definition = [i for i in span if " " in i][0]
+      definition = [i for i in span if " " in i or '.' in i][0]
       synonyms = [i for i in span if " " not in i][0:5]
       example = soup.find(class_='thODed Uekwlc XpoqFe').find(class_='vk_gy')
       if not example: example = ' '
