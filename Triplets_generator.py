@@ -134,11 +134,11 @@ class Vocab_select:
     else: 
       print('Please input your custom word range:')
       display(ReceiveInput('Input format: [start]-[end]', self.GetCustomFiles))
-      print('''
---------------------------------------------------------------------------------
-              Vocab file loaded! Please continue below!''')
   
   def GetCustomFiles(self, value):
     output.clear()
     self.from_to = (int(value[:value.find('-')]),int(value[value.find('-')+1:]))
-    print(f'Custom Vocab list created from word[{self.from_to[0]}] to word[{self.from_to[1]}]')    
+    print(f'Custom Vocab list created from word[{self.from_to[0]}] to word[{self.from_to[1]}]')  
+    print('''
+--------------------------------------------------------------------------------
+              Vocab file loaded! Please continue below!''')            
