@@ -1,6 +1,7 @@
 import os, requests, re, time, datetime, pandas_gbq, getpass, json, IPython, uuid, google.cloud.storage
 import numpy as np
 import pandas as pd
+from bs4 import BeautifulSoup
 from google.oauth2 import service_account
 from google.colab import output
 from IPython.display import clear_output
@@ -73,15 +74,36 @@ class MainEngine:
     return triplet  
 
   def get_definition(self, word):
-    url = f'https://googledictionaryapi.eu-gb.mybluemix.net/?define={word}'
-    html = requests.get(url, timeout=5)
-    json_ = html.json()
-    for i,v in json_[0]['meaning'].items():
-      example = None
+    url = f'https://www.google.com/search?hl=en&q={word}'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content).find("div", class_= "VpH2eb vmod XpoqFe")
+    if not soup:
+      print(word,'Google Fails') 
+      url = f'https://wordsapiv1.p.mashape.com/words/{word}'
+      headers = {'x-rapidapi-host': "wordsapiv1.p.rapidapi.com",
+                 'x-rapidapi-key': "949abd3c54msh638191acd9c73abp1b45abjsn596b27b8d9b7"}
+      response = requests.get(url, headers=headers)
+      json_ = response.json()
+      val = [len(v['synonyms'])for i,v in enumerate(json_['results']) if 'synonyms' in v]
+      if len(val)>0 : val = json_['results'][val.index(max(val))]
+      else: val = json_['results'][0]
       synonyms = None
-      if 'example' in v[0].keys(): example = v[0]['example'].replace(word,f'{self.format.GREEN}{word}{self.format.RESET}')
-      if 'synonyms' in v[0].keys(): synonyms = v[0]['synonyms'][:min(5,len(v[0]['synonyms']))]
-      return {'Word': word, 'Form': i, 'Definition': v[0]['definition'],
+      example = None
+      if 'examples' in val: example = val['examples'][0].replace(word,f'{self.format.GREEN}{word}{self.format.RESET}')
+      if 'synonyms' in val: synonyms = val['synonyms']
+      return {'Word': word, 'Form': val['partOfSpeech'], 'Definition': val['definition'],
+              'Synonyms': synonyms, 'Example': example}
+    else:
+      print(word,'Google No Fails') 
+      form = soup.find(class_='vpx4Fd').find(class_='pgRvse vdBwhd').getText()
+      span = [i.getText() for i in soup.find(class_='thODed Uekwlc XpoqFe').find_all('span') if len(i.getText())>1]
+      definition = [i for i in span if " " in i][0]
+      synonyms = [i for i in span if " " not in i][0:5]
+      example = soup.find(class_='thODed Uekwlc XpoqFe').find(class_='vk_gy')
+      if not example: example = ' '
+      else: example = example.getText().replace('"','').replace(word,f'{self.format.GREEN}{word}{self.format.RESET}')
+      return {'Word': word, 'Form': form, 'Definition': definition,
               'Synonyms': synonyms, 'Example': example}
 
   def present(self, triplet):
