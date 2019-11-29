@@ -115,30 +115,3 @@ class WordFam:
     if isinstance(S[0], list):
       return self.flatten(S[0]) + self.flatten(S[1:])
     return S[:1] + self.flatten(S[1:])  
-
-class Vocab_select:
-  def __init__(self):
-    self.files_dict = {i[i.rfind('/')+1:]:i for i in os.popen('gsutil ls gs://sat_vocab_test/Vocab_txt/SAT-400').read().split('\n')[1:-1]}
-    self.from_to = None
-    self.GoogleBucket = google.cloud.storage.Client.from_service_account_json('key.json').get_bucket('sat_vocab_test')
-  def GetFiles(self, a):
-    output.clear()
-    self.choice = a
-    #if not os.path.isfile(a): os.popen(f'gsutil cp {file_dict[a]} .')
-    #assert os.path.isfile(a), 'Vocab file not found!'
-    self.string_ = self.GoogleBucket.get_blob(f'Vocab_txt/SAT-400/{a}').download_as_string().decode('ASCII') 
-    if a != '999_vocab_SAT_ALL.txt':
-      print('''
---------------------------------------------------------------------------------
-              Vocab file loaded! Please continue below!''')
-    else: 
-      print('Please input your custom word range:')
-      display(ReceiveInput('Input format: [start]-[end]', self.GetCustomFiles))
-  
-  def GetCustomFiles(self, value):
-    output.clear()
-    self.from_to = (int(value[:value.find('-')]),int(value[value.find('-')+1:]))
-    print(f'Custom Vocab list created from word[{self.from_to[0]}] to word[{self.from_to[1]}]')  
-    print('''
---------------------------------------------------------------------------------
-              Vocab file loaded! Please continue below!''')            
