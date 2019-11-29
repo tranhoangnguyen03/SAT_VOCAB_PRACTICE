@@ -119,7 +119,8 @@ class MainEngine:
 
   def score(self, words, sentence):
     words = self.wordFam.flatten([self.wordFam.return_fam(word) for word in words])
-    return np.sum([i[:i.find('-')].replace('TO ','').replace('to ','').strip(' ').upper() in sentence.upper() for i in words])
+    return [i in ' '.join([j[:j.find('-')].replace('TO ','').replace('to ','').strip(' ').upper() for j in words]) for i in re.split(r'\W+', sentence.upper())]
+    #return np.sum([i[:i.find('-')].replace('TO ','').replace('to ','').strip(' ').upper() in sentence.upper() for i in words])
 
 class WordFam:
   def __init__(self,file):
