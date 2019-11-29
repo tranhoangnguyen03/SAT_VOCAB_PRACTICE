@@ -79,7 +79,6 @@ class MainEngine:
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content).find("div", class_= "VpH2eb vmod XpoqFe")
     if not soup:
-      print(word,'Google Fails') 
       url = f'https://wordsapiv1.p.mashape.com/words/{word}'
       headers = {'x-rapidapi-host': "wordsapiv1.p.rapidapi.com",
                  'x-rapidapi-key': "949abd3c54msh638191acd9c73abp1b45abjsn596b27b8d9b7"}
@@ -95,7 +94,6 @@ class MainEngine:
       return {'Word': word, 'Form': val['partOfSpeech'], 'Definition': val['definition'],
               'Synonyms': synonyms, 'Example': example}
     else:
-      print(word,'Google No Fails') 
       form = soup.find(class_='vpx4Fd').find(class_='pgRvse vdBwhd').getText()
       span = [i.getText() for i in soup.find(class_='thODed Uekwlc XpoqFe').find_all('span') if len(i.getText())>1]
       definition = [i for i in span if " " in i][0]
