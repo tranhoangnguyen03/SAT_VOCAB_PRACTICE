@@ -165,7 +165,7 @@ class ReceiveInput(object):
     self._callback = callback
 
   def _repr_html_(self):
-    callback_id = 'button-' + str(uuid.uuid4())
+    callback_id = 'input-' + str(uuid.uuid4())
     output.register_callback(callback_id, self._callback)
 
     template = """{title}
