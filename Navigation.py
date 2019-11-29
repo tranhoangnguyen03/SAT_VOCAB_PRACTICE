@@ -169,7 +169,7 @@ class ReceiveInput(object):
     output.register_callback(callback_id, self._callback)
 
     template = """{title}
-      <input type="text" id={callback_id} value="ex: 1-405" name={title}></input>
+      <input type="text" id={callback_id} value="ex: 1-405"></input>
         <script>
           document.querySelector("#{callback_id}").onchange = (e) => {{
             google.colab.kernel.invokeFunction('{callback_id}', [e.target.value], {{}})
